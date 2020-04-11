@@ -6,12 +6,12 @@ namespace GreenBook {
     public class Book {
 
         List<double> grades = new List<double>();
-        private string name;
+        private string Name;
 
         public Book() {}
 
         public Book(string name) {
-            this.name = name;
+            this.Name = name;
         }
 
         public Book(List<double> grades) {
@@ -28,6 +28,14 @@ namespace GreenBook {
 
         public List<double> getGrades() {
             return this.grades;
+        }
+
+        public string getName() {
+            return this.Name;
+        }
+
+        public void setName(string name) {
+            this.Name = name;
         }
 
         public Statistics GetStatistics() {
