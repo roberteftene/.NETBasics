@@ -1,58 +1,118 @@
 using System;
 using System.Collections.Generic;
 
-namespace GreenBook {
+namespace GreenBook
+{
 
-    public class Book {
+    public delegate void GradeAddedDelegate(object sender, EventArgs args);
+
+    public class NamedObject
+    {
+        public NamedObject(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; set; }
+    }
+
+    public interface IBook
+    {
+        void AddGrade(double grade);
+        Statistics GetStatistics();
+        string Name { get; }
+        event GradeAddedDelegate GradeAdded;
+    }
+
+    public abstract class Book : NamedObject, IBook
+    {
+        public Book(string name) : base(name) { }
+
+        public abstract event GradeAddedDelegate GradeAdded;
+
+        public abstract void AddGrade(double grade);
+
+        public abstract Statistics GetStatistics();
+    }
+
+    public class InMemoryBook : Book, IBook
+    {
 
         List<double> grades = new List<double>();
-        private string Name;
+        public const string CATEGORY = "Science";
+        public override event GradeAddedDelegate GradeAdded;
 
-        public Book() {}
 
-        public Book(string name) {
+        public InMemoryBook() : base("") { }
+
+        public InMemoryBook(string name) : base(name)
+        {
+            grades = new List<double>();
             this.Name = name;
         }
 
-        public Book(List<double> grades) {
+        public InMemoryBook(List<double> grades, string name) : base(name)
+        {
+
             this.grades = grades;
         }
 
-        public void AddGrade(double grade) {
-            if(grade >= 0.0 && grade <= 100.00) {
-            grades.Add(grade);
-            } else {
-                System.Console.WriteLine("The grade is incorrect!");
+        public override void AddGrade(double grade)
+        {
+            if (grade >= 0.0 && grade <= 100.00)
+            {
+                grades.Add(grade);
+                if (GradeAdded != null)
+                {
+                    GradeAdded(this, new EventArgs());
+                }
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid {nameof(grade)}");
             }
         }
 
-        public List<double> getGrades() {
+        public List<double> getGrades()
+        {
             return this.grades;
         }
 
-        public string getName() {
-            return this.Name;
+        public void AddGrade(char letter)
+        {
+
+            switch (letter)
+            {
+                case 'A':
+                    AddGrade(90);
+                    break;
+
+                case 'B':
+                    AddGrade(80);
+                    break;
+
+                case 'C':
+                    AddGrade(70);
+                    break;
+
+                default:
+                    AddGrade(0);
+                    break;
+
+            }
+
         }
 
-        public void setName(string name) {
-            this.Name = name;
-        }
-
-        public Statistics GetStatistics() {
+        public override Statistics GetStatistics()
+        {
             var result = new Statistics();
-            result.Average = 0.0;
-            result.High = double.MinValue;
-            result.Low = double.MaxValue;
-            var sum = 0.0;
             System.Console.Write("The grades are: ");
 
-            foreach(double grade in grades) {
-                sum += grade;
-                result.High = Math.Max(grade, result.High);
-                result.Low = Math.Min(grade, result.Low);
+            foreach (double grade in grades)
+            {
+                result.Add(grade);
                 Console.Write(grade + "  ");
             }
-            result.Average = sum / grades.Count;
             return result;
 
         }

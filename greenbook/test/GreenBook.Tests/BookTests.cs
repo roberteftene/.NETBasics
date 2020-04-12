@@ -18,14 +18,12 @@ namespace GreenBook.Tests
 
             //Act
             var stats = book.GetStatistics();
-            System.Console.WriteLine($"The highest grade is: {stats.High}!");
-            System.Console.WriteLine($"The smallest grade is: {stats.Low}!");
-            System.Console.WriteLine($"The average is: {stats.Average:N2}!");
 
             // Assert
             Assert.Equal(85.5, stats.Average, 1);
             Assert.Equal(90.05, stats.High,1);
             Assert.Equal(77.3,stats.Low,1);
+            Assert.Equal('B', stats.Letter);
 
         }
     }
